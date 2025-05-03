@@ -1,36 +1,135 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# InfluenceAI App
 
-## Getting Started
+A modern web application for Instagram and Facebook influencer insights, built using Next.js with App Router, TypeScript, and API routes for auth and analytics.
 
-First, run the development server:
+---
+
+## 🔧 Tech Stack
+
+- **Framework**: Next.js (App Router)
+- **Language**: TypeScript
+- **Styling**: CSS Modules
+- **Auth**: Facebook OAuth, Magic Link
+- **Data**: Instagram Graph API
+- **Deployment**: Custom HTTPS-ready dev server
+
+---
+
+## 📁 Project Structure
+
+```
+app/
+├── api/                    # Serverless API routes (auth, insights, media)
+├── auth/                   # Authentication pages and states
+├── components/             # UI components (auth buttons, charts, layout)
+├── config/                 # Facebook auth configurations
+├── dashboard/              # Dashboard pages for insights and user profiles
+├── hooks/                  # Custom React Hooks
+├── instagram/              # Instagram landing page
+├── lib/                    # Utility functions and types
+├── user-type-selection/    # Page to choose user role
+├── layout.tsx              # Root layout
+├── middleware.ts           # Route handling middleware
+├── page.tsx                # Home page
+├── globals.css             # Global styles
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 14+
+- npm or yarn
+
+### Install
+
+```bash
+git clone https://github.com/cma-org/influenceai-app.git
+cd influenceai-app
+npm install
+```
+
+### Run the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit: [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔒 Enable HTTPS for Localhost (Recommended for Auth Testing)
 
-## Learn More
+### 1. Generate Local Certificates
 
-To learn more about Next.js, take a look at the following resources:
+Install `mkcert`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+brew install mkcert        # macOS
+choco install mkcert       # Windows
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Generate certs:
 
-## Deploy on Vercel
+```bash
+mkcert -install
+mkcert localhost
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2. Update `server.js`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```js
+const fs = require("fs");
+const https = require("https");
+const next = require("next");
+
+const app = next({ dev: true });
+const handle = app.getRequestHandler();
+
+const httpsOptions = {
+  key: fs.readFileSync("./localhost-key.pem"),
+  cert: fs.readFileSync("./localhost.pem"),
+};
+
+app.prepare().then(() => {
+  https
+    .createServer(httpsOptions, (req, res) => {
+      handle(req, res);
+    })
+    .listen(3000, () => {
+      console.log("> Ready on https://localhost:3000");
+    });
+});
+```
+
+### 3. Run HTTPS Local Server
+
+```bash
+npm run dev
+```
+
+Now accessible via [https://localhost:3000](https://localhost:3000)
+
+---
+
+## 📊 Core Features
+
+- Instagram account analytics (followers, engagement, demographics)
+- Facebook account authentication and token exchange
+- Magic Link login (passwordless auth)
+- Dynamic charts and dashboards
+- Extensible API routes
+
+---
+
+## 👥 Contributors
+
+
+---
+
+## 📄 License
+
+This project is proprietary. All rights reserved. Unauthorized copying, modification, distribution, or use of this software, via any medium, is strictly prohibited.
